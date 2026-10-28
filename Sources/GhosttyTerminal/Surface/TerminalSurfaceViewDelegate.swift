@@ -146,6 +146,54 @@ public protocol TerminalSurfaceProgressReportDelegate: TerminalSurfaceViewDelega
     func terminalDidReportProgress(state: TerminalProgressState, percent: Int?)
 }
 
+/// State of an OSC 7501 program status report.
+public enum TerminalProgramState: Hashable, Sendable {
+    case idle
+    case working
+    case done
+    /// Waiting on the user; the kind says for what, when the program sent one.
+    case blocked(TerminalProgramBlockKind?)
+    case error
+    /// Not a state: the program withdrew its status.
+    case clear
+
+    init?(_ raw: ghostty_action_program_status_s) {
+        switch raw.state {
+        case GHOSTTY_PROGRAM_STATUS_STATE_IDLE: self = .idle
+        case GHOSTTY_PROGRAM_STATUS_STATE_WORKING: self = .working
+        case GHOSTTY_PROGRAM_STATUS_STATE_DONE: self = .done
+        case GHOSTTY_PROGRAM_STATUS_STATE_BLOCKED:
+            self = .blocked(TerminalProgramBlockKind(rawValue: raw.kind))
+        case GHOSTTY_PROGRAM_STATUS_STATE_ERROR: self = .error
+        case GHOSTTY_PROGRAM_STATUS_STATE_CLEAR: self = .clear
+        default: return nil
+        }
+    }
+}
+
+/// What a blocked OSC 7501 program needs from the user.
+public enum TerminalProgramBlockKind: Hashable, Sendable {
+    case permission
+    case question
+    case auth
+
+    init?(rawValue: Int32) {
+        switch UInt32(bitPattern: rawValue) {
+        case GHOSTTY_PROGRAM_STATUS_KIND_PERMISSION.rawValue: self = .permission
+        case GHOSTTY_PROGRAM_STATUS_KIND_QUESTION.rawValue: self = .question
+        case GHOSTTY_PROGRAM_STATUS_KIND_AUTH.rawValue: self = .auth
+        default: return nil
+        }
+    }
+}
+
+/// OSC 7501 program status: what the program is doing, with a 0-100
+/// percent when it reported one. Each report replaces the previous one.
+@MainActor
+public protocol TerminalSurfaceProgramStatusDelegate: TerminalSurfaceViewDelegate {
+    func terminalDidReportProgramStatus(state: TerminalProgramState, percent: Int?)
+}
+
 public enum TerminalColorChangeKind: Hashable, Sendable {
     case foreground
     case background

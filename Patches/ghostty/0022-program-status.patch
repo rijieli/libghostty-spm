@@ -1,0 +1,212 @@
+diff --git a/include/ghostty.h b/include/ghostty.h
+index c29a598b7..f7b95ea21 100644
+--- a/include/ghostty.h
++++ b/include/ghostty.h
+@@ -943,6 +943,34 @@ typedef struct {
+   int8_t progress;
+ } ghostty_action_progress_report_s;
+ 
++// terminal.osc.Command.ProgramStatus.State
++typedef enum {
++  GHOSTTY_PROGRAM_STATUS_STATE_IDLE,
++  GHOSTTY_PROGRAM_STATUS_STATE_WORKING,
++  GHOSTTY_PROGRAM_STATUS_STATE_DONE,
++  GHOSTTY_PROGRAM_STATUS_STATE_BLOCKED,
++  GHOSTTY_PROGRAM_STATUS_STATE_ERROR,
++  GHOSTTY_PROGRAM_STATUS_STATE_CLEAR,
++} ghostty_action_program_status_state_e;
++
++// terminal.osc.Command.ProgramStatus.Kind
++typedef enum {
++  GHOSTTY_PROGRAM_STATUS_KIND_PERMISSION,
++  GHOSTTY_PROGRAM_STATUS_KIND_QUESTION,
++  GHOSTTY_PROGRAM_STATUS_KIND_AUTH,
++} ghostty_action_program_status_kind_e;
++
++// apprt.action.ProgramStatus.C
++typedef struct {
++  ghostty_action_program_status_state_e state;
++  // -1 if the report carries no kind, otherwise a
++  // ghostty_action_program_status_kind_e. Only a blocked report has one.
++  int kind;
++  // -1 if no progress was reported, otherwise 0-100 indicating percent
++  // completeness.
++  int8_t progress;
++} ghostty_action_program_status_s;
++
+ // apprt.action.CommandFinished.C
+ typedef struct {
+   // -1 if no exit code was reported, otherwise 0-255
+@@ -1035,6 +1063,7 @@ typedef enum {
+   GHOSTTY_ACTION_OPEN_URL,
+   GHOSTTY_ACTION_SHOW_CHILD_EXITED,
+   GHOSTTY_ACTION_PROGRESS_REPORT,
++  GHOSTTY_ACTION_PROGRAM_STATUS,
+   GHOSTTY_ACTION_SHOW_ON_SCREEN_KEYBOARD,
+   GHOSTTY_ACTION_COMMAND_FINISHED,
+   GHOSTTY_ACTION_START_SEARCH,
+@@ -1083,6 +1112,7 @@ typedef union {
+   ghostty_action_close_tab_mode_e close_tab_mode;
+   ghostty_surface_message_childexited_s child_exited;
+   ghostty_action_progress_report_s progress_report;
++  ghostty_action_program_status_s program_status;
+   ghostty_action_command_finished_s command_finished;
+   ghostty_action_start_search_s start_search;
+   ghostty_action_search_total_s search_total;
+diff --git a/src/Surface.zig b/src/Surface.zig
+index f3e0f7f3f..f5e0d6434 100644
+--- a/src/Surface.zig
++++ b/src/Surface.zig
+@@ -1184,6 +1184,16 @@ pub fn handleMessage(self: *Surface, msg: Message) !void {
+             };
+         },
+ 
++        .program_status => |v| {
++            _ = self.rt_app.performAction(
++                .{ .surface = self },
++                .program_status,
++                v,
++            ) catch |err| {
++                log.warn("apprt failed to report program status err={}", .{err});
++            };
++        },
++
+         .progress_report => |v| {
+             _ = self.rt_app.performAction(
+                 .{ .surface = self },
+diff --git a/src/apprt/action.zig b/src/apprt/action.zig
+index 708898e76..70501b301 100644
+--- a/src/apprt/action.zig
++++ b/src/apprt/action.zig
+@@ -326,6 +326,9 @@ pub const Action = union(Key) {
+     /// Show a native GUI notification about the progress of some TUI operation.
+     progress_report: terminal.osc.Command.ProgressReport,
+ 
++    /// The program reported what it is doing (OSC 7501).
++    program_status: ProgramStatus,
++
+     /// Show the on-screen keyboard.
+     show_on_screen_keyboard,
+ 
+@@ -426,6 +429,7 @@ pub const Action = union(Key) {
+         open_url,
+         show_child_exited,
+         progress_report,
++        program_status,
+         show_on_screen_keyboard,
+         command_finished,
+         start_search,
+@@ -1008,6 +1012,41 @@ pub const CloseTabMode = enum(c_int) {
+     }
+ };
+ 
++/// One OSC 7501 report, reduced to what a status indicator shows: the
++/// state, what a blocked program waits for, and the progress. The id,
++/// app, title and message stay in the terminal; a report replaces the
++/// previous one.
++pub const ProgramStatus = struct {
++    state: terminal.osc.Command.ProgramStatus.State,
++    kind: ?terminal.osc.Command.ProgramStatus.Kind,
++    progress: ?u8,
++
++    pub fn init(report: terminal.osc.Command.ProgramStatus.Report) ProgramStatus {
++        return .{
++            .state = report.state,
++            .kind = report.readOption(.kind),
++            .progress = report.readOption(.progress),
++        };
++    }
++
++    /// sync with ghostty_action_program_status_s in ghostty.h
++    pub const C = extern struct {
++        state: c_int,
++        // -1 when the report carries no kind
++        kind: c_int,
++        // -1 when the report carries no progress, otherwise 0-100
++        progress: i8,
++    };
++
++    pub fn cval(self: ProgramStatus) C {
++        return .{
++            .state = @backingInt(self.state),
++            .kind = if (self.kind) |kind| @backingInt(kind) else -1,
++            .progress = if (self.progress) |progress| @intCast(@min(progress, 100)) else -1,
++        };
++    }
++};
++
+ pub const CommandFinished = struct {
+     exit_code: ?u8,
+     duration: configpkg.Config.Duration,
+diff --git a/src/apprt/gtk/class/application.zig b/src/apprt/gtk/class/application.zig
+index 08d5d7c30..0a9fb0ba1 100644
+--- a/src/apprt/gtk/class/application.zig
++++ b/src/apprt/gtk/class/application.zig
+@@ -775,6 +775,9 @@ pub const Application = extern struct {
+             // GTK has no accessibility consumer for this yet.
+             .selection_changed => {},
+ 
++            // GTK has no program status indicator yet.
++            .program_status => {},
++
+             .scrollbar => Action.scrollbar(target, value),
+ 
+             .set_title => Action.setTitle(target, value),
+diff --git a/src/apprt/surface.zig b/src/apprt/surface.zig
+index 35899078a..78bee1ca0 100644
+--- a/src/apprt/surface.zig
++++ b/src/apprt/surface.zig
+@@ -140,6 +140,9 @@ pub const Message = union(enum) {
+     /// Report the progress of an action using a GUI element
+     progress_report: terminal.osc.Command.ProgressReport,
+ 
++    /// The program reported what it is doing (OSC 7501).
++    program_status: apprt.action.ProgramStatus,
++
+     /// A command has started in the shell, start a timer.
+     start_command,
+ 
+diff --git a/src/termio/stream_handler.zig b/src/termio/stream_handler.zig
+index edd992a62..043837690 100644
+--- a/src/termio/stream_handler.zig
++++ b/src/termio/stream_handler.zig
+@@ -370,6 +370,7 @@ pub const StreamHandler = struct {
+             .report_pwd => try self.reportPwd(value.url),
+             .show_desktop_notification => try self.showDesktopNotification(value.title, value.body),
+             .progress_report => self.progressReport(value),
++            .program_status => self.programStatus(value),
+             .start_hyperlink => try self.startHyperlink(value.uri, value.id),
+             .clipboard_contents => try self.clipboardContents(value.kind, value.data),
+             .semantic_prompt => try self.semanticPrompt(value),
+@@ -410,7 +411,6 @@ pub const StreamHandler = struct {
+             .title_pop,
+             .kitty_dnd,
+             .osc_unknown,
+-            .program_status,
+             => {},
+         }
+     }
+@@ -1972,6 +1972,23 @@ pub const StreamHandler = struct {
+     fn progressReport(self: *StreamHandler, report: terminal.osc.Command.ProgressReport) void {
+         self.surfaceMessageWriter(.{ .progress_report = report });
+     }
++
++    /// OSC 7501: forward a report to the apprt, and answer the support
++    /// query with the fixed list of states and kinds this build accepts.
++    fn programStatus(self: *StreamHandler, cmd: terminal.osc.Command.ProgramStatus) void {
++        switch (cmd) {
++            .report => |report| self.surfaceMessageWriter(.{
++                .program_status = .init(report),
++            }),
++            .query => |terminator| switch (terminator) {
++                inline else => |t| self.messageWriter(.{
++                    .write_stable = "\x1b]7501;" ++
++                        terminal.osc.program_status.query_reply ++
++                        comptime t.string(),
++                }),
++            },
++        }
++    }
+ };
+ 
+ test "kitty clipboard read: targets-only never consumes a one-time grant" {

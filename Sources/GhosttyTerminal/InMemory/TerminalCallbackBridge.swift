@@ -81,6 +81,17 @@ final class TerminalCallbackBridge {
             (delegate as? any TerminalSurfaceProgressReportDelegate)?
                 .terminalDidReportProgress(state: state, percent: percent)
 
+        case GHOSTTY_ACTION_PROGRAM_STATUS:
+            let report = action.action.program_status
+            guard let state = TerminalProgramState(report) else { break }
+            let percent: Int? = report.progress < 0 ? nil : Int(report.progress)
+            TerminalDebugLog.log(
+                .actions,
+                "callback action=program_status state=\(state) percent=\(percent.map { "\($0)" } ?? "nil")",
+            )
+            (delegate as? any TerminalSurfaceProgramStatusDelegate)?
+                .terminalDidReportProgramStatus(state: state, percent: percent)
+
         case GHOSTTY_ACTION_COLOR_CHANGE:
             let payload = action.action.color_change
             let change = TerminalColorChange(
