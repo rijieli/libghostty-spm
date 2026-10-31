@@ -1,8 +1,8 @@
 diff --git a/include/ghostty.h b/include/ghostty.h
-index c29a598b7..f7b95ea21 100644
+index 9a12b9cad..9806dd004 100644
 --- a/include/ghostty.h
 +++ b/include/ghostty.h
-@@ -943,6 +943,34 @@ typedef struct {
+@@ -914,6 +914,38 @@ typedef struct {
    int8_t progress;
  } ghostty_action_progress_report_s;
  
@@ -32,12 +32,16 @@ index c29a598b7..f7b95ea21 100644
 +  // -1 if no progress was reported, otherwise 0-100 indicating percent
 +  // completeness.
 +  int8_t progress;
++  // Valid only for the duration of the action callback. Contains validated
++  // OSC 7501 key/value pairs; title and msg are base64 encoded.
++  uint32_t data_len;
++  const uint8_t *data;
 +} ghostty_action_program_status_s;
 +
  // apprt.action.CommandFinished.C
  typedef struct {
    // -1 if no exit code was reported, otherwise 0-255
-@@ -1035,6 +1063,7 @@ typedef enum {
+@@ -1006,6 +1038,7 @@ typedef enum {
    GHOSTTY_ACTION_OPEN_URL,
    GHOSTTY_ACTION_SHOW_CHILD_EXITED,
    GHOSTTY_ACTION_PROGRESS_REPORT,
@@ -45,7 +49,7 @@ index c29a598b7..f7b95ea21 100644
    GHOSTTY_ACTION_SHOW_ON_SCREEN_KEYBOARD,
    GHOSTTY_ACTION_COMMAND_FINISHED,
    GHOSTTY_ACTION_START_SEARCH,
-@@ -1083,6 +1112,7 @@ typedef union {
+@@ -1054,6 +1087,7 @@ typedef union {
    ghostty_action_close_tab_mode_e close_tab_mode;
    ghostty_surface_message_childexited_s child_exited;
    ghostty_action_progress_report_s progress_report;
@@ -53,19 +57,34 @@ index c29a598b7..f7b95ea21 100644
    ghostty_action_command_finished_s command_finished;
    ghostty_action_start_search_s start_search;
    ghostty_action_search_total_s search_total;
+diff --git a/src/App.zig b/src/App.zig
+index 840dac6ec..01ceadc0d 100644
+--- a/src/App.zig
++++ b/src/App.zig
+@@ -525,6 +525,9 @@ fn surfaceMessage(self: *App, surface: *Surface, msg: apprt.surface.Message) !vo
+     // a simple linear search here.
+     if (self.hasSurface(surface)) {
+         try surface.handleMessage(msg);
++    } else switch (msg) {
++        .program_status => |v| v.data.deinit(),
++        else => {},
+     }
+ 
+     // Window was not found, it probably quit before we handled the message.
 diff --git a/src/Surface.zig b/src/Surface.zig
-index f3e0f7f3f..f5e0d6434 100644
+index 369bb2399..306734280 100644
 --- a/src/Surface.zig
 +++ b/src/Surface.zig
-@@ -1184,6 +1184,16 @@ pub fn handleMessage(self: *Surface, msg: Message) !void {
+@@ -1176,6 +1176,17 @@ pub fn handleMessage(self: *Surface, msg: Message) !void {
              };
          },
  
 +        .program_status => |v| {
++            defer v.data.deinit();
 +            _ = self.rt_app.performAction(
 +                .{ .surface = self },
 +                .program_status,
-+                v,
++                .init(.{ .state = v.state, .data = v.data.slice() }),
 +            ) catch |err| {
 +                log.warn("apprt failed to report program status err={}", .{err});
 +            };
@@ -75,7 +94,7 @@ index f3e0f7f3f..f5e0d6434 100644
              _ = self.rt_app.performAction(
                  .{ .surface = self },
 diff --git a/src/apprt/action.zig b/src/apprt/action.zig
-index 708898e76..70501b301 100644
+index 708898e76..c0b11922b 100644
 --- a/src/apprt/action.zig
 +++ b/src/apprt/action.zig
 @@ -326,6 +326,9 @@ pub const Action = union(Key) {
@@ -96,24 +115,24 @@ index 708898e76..70501b301 100644
          show_on_screen_keyboard,
          command_finished,
          start_search,
-@@ -1008,6 +1012,41 @@ pub const CloseTabMode = enum(c_int) {
+@@ -1008,6 +1012,46 @@ pub const CloseTabMode = enum(c_int) {
      }
  };
  
-+/// One OSC 7501 report, reduced to what a status indicator shows: the
-+/// state, what a blocked program waits for, and the progress. The id,
-+/// app, title and message stay in the terminal; a report replaces the
-+/// previous one.
++/// One OSC 7501 report. The validated data is borrowed for the duration
++/// of the app action and contains the optional protocol fields.
 +pub const ProgramStatus = struct {
 +    state: terminal.osc.Command.ProgramStatus.State,
 +    kind: ?terminal.osc.Command.ProgramStatus.Kind,
 +    progress: ?u8,
++    data: []const u8,
 +
 +    pub fn init(report: terminal.osc.Command.ProgramStatus.Report) ProgramStatus {
 +        return .{
 +            .state = report.state,
 +            .kind = report.readOption(.kind),
 +            .progress = report.readOption(.progress),
++            .data = report.data,
 +        };
 +    }
 +
@@ -124,6 +143,9 @@ index 708898e76..70501b301 100644
 +        kind: c_int,
 +        // -1 when the report carries no progress, otherwise 0-100
 +        progress: i8,
++        // u32 keeps the action union at 24 bytes; a body is at most 4089
++        data_len: u32,
++        data: [*]const u8,
 +    };
 +
 +    pub fn cval(self: ProgramStatus) C {
@@ -131,6 +153,8 @@ index 708898e76..70501b301 100644
 +            .state = @backingInt(self.state),
 +            .kind = if (self.kind) |kind| @backingInt(kind) else -1,
 +            .progress = if (self.progress) |progress| @intCast(@min(progress, 100)) else -1,
++            .data_len = @intCast(self.data.len),
++            .data = self.data.ptr,
 +        };
 +    }
 +};
@@ -153,24 +177,27 @@ index 08d5d7c30..0a9fb0ba1 100644
  
              .set_title => Action.setTitle(target, value),
 diff --git a/src/apprt/surface.zig b/src/apprt/surface.zig
-index 35899078a..78bee1ca0 100644
+index 3b1a04d8a..d96be8d7d 100644
 --- a/src/apprt/surface.zig
 +++ b/src/apprt/surface.zig
-@@ -140,6 +140,9 @@ pub const Message = union(enum) {
+@@ -140,6 +140,12 @@ pub const Message = union(enum) {
      /// Report the progress of an action using a GUI element
      progress_report: terminal.osc.Command.ProgressReport,
  
 +    /// The program reported what it is doing (OSC 7501).
-+    program_status: apprt.action.ProgramStatus,
++    program_status: struct {
++        state: terminal.osc.Command.ProgramStatus.State,
++        data: WriteReq,
++    },
 +
      /// A command has started in the shell, start a timer.
      start_command,
  
 diff --git a/src/termio/stream_handler.zig b/src/termio/stream_handler.zig
-index edd992a62..043837690 100644
+index 0f1ee50f7..a64fc6287 100644
 --- a/src/termio/stream_handler.zig
 +++ b/src/termio/stream_handler.zig
-@@ -370,6 +370,7 @@ pub const StreamHandler = struct {
+@@ -345,6 +345,7 @@ pub const StreamHandler = struct {
              .report_pwd => try self.reportPwd(value.url),
              .show_desktop_notification => try self.showDesktopNotification(value.title, value.body),
              .progress_report => self.progressReport(value),
@@ -178,7 +205,7 @@ index edd992a62..043837690 100644
              .start_hyperlink => try self.startHyperlink(value.uri, value.id),
              .clipboard_contents => try self.clipboardContents(value.kind, value.data),
              .semantic_prompt => try self.semanticPrompt(value),
-@@ -410,7 +411,6 @@ pub const StreamHandler = struct {
+@@ -385,7 +386,6 @@ pub const StreamHandler = struct {
              .title_pop,
              .kitty_dnd,
              .osc_unknown,
@@ -186,7 +213,7 @@ index edd992a62..043837690 100644
              => {},
          }
      }
-@@ -1972,6 +1972,23 @@ pub const StreamHandler = struct {
+@@ -1947,6 +1947,27 @@ pub const StreamHandler = struct {
      fn progressReport(self: *StreamHandler, report: terminal.osc.Command.ProgressReport) void {
          self.surfaceMessageWriter(.{ .progress_report = report });
      }
@@ -195,9 +222,13 @@ index edd992a62..043837690 100644
 +    /// query with the fixed list of states and kinds this build accepts.
 +    fn programStatus(self: *StreamHandler, cmd: terminal.osc.Command.ProgramStatus) void {
 +        switch (cmd) {
-+            .report => |report| self.surfaceMessageWriter(.{
-+                .program_status = .init(report),
-+            }),
++            .report => |report| {
++                const data = apprt.surface.Message.WriteReq.init(self.alloc, report.data) catch |err| {
++                    log.warn("failed to copy program status: {}", .{err});
++                    return;
++                };
++                self.surfaceMessageWriter(.{ .program_status = .{ .state = report.state, .data = data } });
++            },
 +            .query => |terminator| switch (terminator) {
 +                inline else => |t| self.messageWriter(.{
 +                    .write_stable = "\x1b]7501;" ++

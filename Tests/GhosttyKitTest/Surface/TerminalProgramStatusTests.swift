@@ -29,7 +29,7 @@ struct TerminalProgramStatusTests {
         let probe = ProgramStatusProbe()
         harness.coordinator.delegate = probe
 
-        harness.receive("\u{1B}]7501;state=working:id=sync:progress=40\u{1B}\\")
+        harness.receive("\u{1B}]7501;state=working:id=sync:app=demo:progress=40:title=VGl0bGU:msg=SGVsbG8\u{1B}\\")
         harness.receive("\u{1B}]7501;state=blocked:kind=permission\u{07}")
         harness.receive("\u{1B}]7501;state=blocked\u{1B}\\")
         harness.receive("\u{1B}]7501;state=done\u{1B}\\")
@@ -48,6 +48,11 @@ struct TerminalProgramStatusTests {
             await LifecycleStress.drainMainQueue(turns: 1)
         }
         #expect(probe.events == expected)
+        #expect(probe.reports.first?.id == "sync")
+        #expect(probe.reports.first?.app == "demo")
+        #expect(probe.reports.first?.title == "Title")
+        #expect(probe.reports.first?.message == "Hello")
+        #expect(probe.reports.dropFirst().first?.message == nil)
         withExtendedLifetime(probe) {}
     }
 
@@ -64,7 +69,7 @@ struct TerminalProgramStatusTests {
         ] {
             var action = ghostty_action_s()
             action.tag = GHOSTTY_ACTION_PROGRAM_STATUS
-            action.action.program_status = ghostty_action_program_status_s(state: state, kind: kind, progress: progress)
+            action.action.program_status = ghostty_action_program_status_s(state: state, kind: kind, progress: progress, data_len: 0, data: nil)
             bridge.handleAction(action)
         }
 
@@ -77,13 +82,18 @@ struct TerminalProgramStatusTests {
 }
 
 @MainActor
-private final class ProgramStatusProbe: TerminalSurfaceProgramStatusDelegate {
+private final class ProgramStatusProbe: TerminalSurfaceProgramStatusDelegate, TerminalSurfaceProgramStatusDetailsDelegate {
     struct Event: Equatable {
         let state: TerminalProgramState
         let percent: Int?
     }
 
     var events: [Event] = []
+    var reports: [TerminalProgramStatusReport] = []
+
+    func terminalDidReportProgramStatus(_ report: TerminalProgramStatusReport) {
+        reports.append(report)
+    }
 
     func terminalDidReportProgramStatus(state: TerminalProgramState, percent: Int?) {
         events.append(.init(state: state, percent: percent))

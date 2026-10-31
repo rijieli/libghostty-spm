@@ -266,11 +266,12 @@ to move back.
 - `0022-program-status.patch` — OSC 7501 (program status protocol).
   Upstream parses it (libghostty-vt's `program_status`) but termio dropped
   it as unimplemented. termio now forwards each report to the apprt as
-  `GHOSTTY_ACTION_PROGRAM_STATUS` (`ghostty_action_program_status_s`:
-  state, blocked kind, progress; id, app, title and msg stay behind, so
-  the action carries no strings) and answers the `OSC 7501 ; ?` support
-  query with upstream's `query_reply`. GTK ignores the action. Swift side:
-  `TerminalSurfaceProgramStatusDelegate`.
+  `GHOSTTY_ACTION_PROGRAM_STATUS` with state, blocked kind, progress and
+  a callback-scoped copy of the validated key/value pairs. The Swift bridge
+  copies and decodes id, app, title and message before dispatching to the
+  main actor. It answers the `OSC 7501 ; ?` support query with upstream's
+  `query_reply`. GTK ignores the action. Swift side:
+  `TerminalSurfaceProgramStatusDelegate` and `TerminalSurfaceProgramStatusDetailsDelegate`.
 
 Dropped once upstream carried them: `0014-free-text-signature.patch`
 (`ghostty_surface_free_text` taking the surface, upstream `4803d58b`). A
