@@ -232,12 +232,16 @@ The package downloads a pre-built XCFramework. To rebuild libghostty from the Gh
 
 `build.sh` forwards to `Script/build.sh`. Without `--source` it clones Ghostty
 into `References/ghostty-upstream`; `--ref` checks out a tag or commit there
-(`Ghostty.ref` is the commit the shipped asset was built from). It applies the
+(`Ghostty.ref` is the commit the shipped asset was built from), discarding
+local changes in that tree first, so an earlier build's patches never block
+a revised one. Without `--ref` the tree is used as it stands. It applies the
 patches in `Patches/ghostty/`, builds each platform group (`macos`, `ios`,
 `maccatalyst`, `visionos` by default; macOS, Catalyst, and simulator slices
 are arm64 and x86_64), assembles `BinaryTarget/GhosttyKit.xcframework` and
 `build/GhosttyKit.xcframework.zip`, and runs `Script/test.sh` and `swift test`
-against the result unless `--skip-tests` is given. `Package.local.swift`
+against the result unless `--skip-tests` is given; `test.sh` builds only the
+destinations the binary target has a slice for, so a `--platforms macos`
+build is tested on macOS alone. `Package.local.swift`
 points the binary target at that local `BinaryTarget/` build; `--download-url`
 regenerates `Package.swift` from `Package.swift.template` for an uploaded zip.
 

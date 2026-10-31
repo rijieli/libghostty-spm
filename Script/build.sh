@@ -92,6 +92,10 @@ if [ -n "$GHOSTTY_REF" ]; then
     # --force: upstream moves its `tip` tag, and a plain --tags fetch
     # refuses to clobber the one an earlier fetch left behind.
     git -C "$SOURCE_DIR" fetch --tags --force origin
+    # A ref means exactly that tree: an earlier build left its patch stack
+    # applied, and a patch revised since then no longer validates on top.
+    git -C "$SOURCE_DIR" reset --hard --quiet
+    git -C "$SOURCE_DIR" clean -fdq
     git -C "$SOURCE_DIR" checkout "$GHOSTTY_REF"
 fi
 
