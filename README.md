@@ -1,5 +1,7 @@
 # GhosttyKit
 
+**This is a small fork of [Lakr233/libghostty-spm](https://github.com/Lakr233/libghostty-spm), pinning a stable `libghostty` build while keeping downstream changes limited.**
+
 Swift Package wrapping [Ghostty](https://ghostty.org)'s terminal emulator library for Apple platforms.
 
 > Pre-built `libghostty` static library distributed as an XCFramework binary target.
