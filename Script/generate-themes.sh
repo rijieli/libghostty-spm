@@ -1,22 +1,40 @@
 #!/bin/zsh
 set -euo pipefail
 
-# Downloads all Ghostty theme files from iTerm2-Color-Schemes and generates
-# Swift source files for the GhosttyTheme library.
+# Generates Swift source files for the GhosttyTheme library from an optional
+# Ghostty theme archive, or from the current iTerm2-Color-Schemes catalog.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 OUTPUT_DIR="$ROOT_DIR/Sources/GhosttyTheme/Themes"
 TEMP_DIR="$(mktemp -d)"
+SOURCE_ARCHIVE="${1:-}"
 
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
 mkdir -p "$OUTPUT_DIR"
 
-# Fetch the list of theme files from GitHub API
-echo "[+] fetching theme list from GitHub API…"
-curl -sL "https://api.github.com/repos/mbadolato/iTerm2-Color-Schemes/contents/ghostty" \
-    | python3 -c "
+if [[ -n "$SOURCE_ARCHIVE" ]]; then
+    [[ -f "$SOURCE_ARCHIVE" ]] || {
+        echo "[-] theme archive not found: $SOURCE_ARCHIVE" >&2
+        exit 1
+    }
+    echo "[+] extracting theme archive…"
+    tar -xzf "$SOURCE_ARCHIVE" -C "$TEMP_DIR"
+    THEMES_DIR="$TEMP_DIR/ghostty"
+    [[ -d "$THEMES_DIR" ]] || {
+        echo "[-] theme archive has no ghostty directory" >&2
+        exit 1
+    }
+    find "$THEMES_DIR" -maxdepth 1 -type f -exec basename {} \; \
+        > "$TEMP_DIR/theme_list.txt"
+else
+    THEMES_DIR="$TEMP_DIR/themes"
+
+    # Fetch the list of theme files from GitHub API
+    echo "[+] fetching theme list from GitHub API…"
+    curl -sL "https://api.github.com/repos/mbadolato/iTerm2-Color-Schemes/contents/ghostty" \
+        | python3 -c "
 import json, sys
 data = json.load(sys.stdin)
 for item in data:
@@ -24,27 +42,28 @@ for item in data:
         print(item['name'])
 " > "$TEMP_DIR/theme_list.txt"
 
+    # Download all themes
+    echo "[+] downloading themes…"
+    mkdir -p "$THEMES_DIR"
+    while IFS= read -r name; do
+        encoded_name=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$name'))")
+        curl -sL "https://raw.githubusercontent.com/mbadolato/iTerm2-Color-Schemes/master/ghostty/$encoded_name" \
+            -o "$THEMES_DIR/$name" &
+        # Limit concurrent downloads
+        if (( $(jobs -r | wc -l) >= 20 )); then
+            wait -n
+        fi
+    done < "$TEMP_DIR/theme_list.txt"
+    wait
+    echo "[+] downloaded all themes"
+fi
+
 THEME_COUNT=$(wc -l < "$TEMP_DIR/theme_list.txt" | tr -d ' ')
 echo "[+] found $THEME_COUNT themes"
 
-# Download all themes
-echo "[+] downloading themes…"
-mkdir -p "$TEMP_DIR/themes"
-while IFS= read -r name; do
-    encoded_name=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$name'))")
-    curl -sL "https://raw.githubusercontent.com/mbadolato/iTerm2-Color-Schemes/master/ghostty/$encoded_name" \
-        -o "$TEMP_DIR/themes/$name" &
-    # Limit concurrent downloads
-    if (( $(jobs -r | wc -l) >= 20 )); then
-        wait -n
-    fi
-done < "$TEMP_DIR/theme_list.txt"
-wait
-echo "[+] downloaded all themes"
-
 # Generate Swift files using Python
 echo "[+] generating Swift source files…"
-python3 - "$TEMP_DIR/themes" "$OUTPUT_DIR" "$TEMP_DIR/theme_list.txt" << 'PYEOF'
+python3 - "$THEMES_DIR" "$OUTPUT_DIR" "$TEMP_DIR/theme_list.txt" << 'PYEOF'
 import os, sys, re, string
 
 themes_dir = sys.argv[1]

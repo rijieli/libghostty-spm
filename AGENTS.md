@@ -8,7 +8,7 @@ SPM package wrapping Ghostty terminal emulator C library for Apple platforms (ma
 
 - **GhosttyKit** — minimal re-export of the libghostty C API (`@_exported import libghostty`)
 - **GhosttyTerminal** — Swift wrapper: native views, SwiftUI integration, input handling, display link, host-managed I/O
-- **GhosttyTheme** — 485 terminal color themes from iTerm2-Color-Schemes (MIT License, depends on GhosttyTerminal)
+- **GhosttyTheme** — 907 terminal color themes from iTerm2-Color-Schemes (MIT License, depends on GhosttyTerminal)
 - **ShellCraftKit** — sandboxed shell emulation framework (depends on GhosttyTerminal)
 
 Binary target: pre-built `libghostty` XCFramework. Dependency: DisplayLink ^3.0.1.
@@ -110,8 +110,9 @@ swift test
 # Generate Package.swift from Package.swift.template (release.yml runs this)
 ./Script/build-manifest.sh <xcframework_zip> <download_url>
 
-# Regenerate GhosttyTheme Swift files from iTerm2-Color-Schemes
-./Script/generate-themes.sh
+# Regenerate GhosttyTheme Swift files from the live iTerm2 catalog,
+# or from Ghostty's pinned theme archive when an archive path is supplied.
+./Script/generate-themes.sh [ghostty-themes.tgz]
 
 # Compile Localization/Localizable.xcstrings into the shipped .lproj tables
 # (--check: fail when they are stale; pr.yml runs it)
@@ -141,7 +142,7 @@ GhosttyTerminal (Swift wrapper, ~70 files)
   ├─ Surface/          TerminalSurface, coordinator + display link, SwiftUI TerminalSurfaceView, delegates, TerminalKey/TerminalKeyPress
   └─ View/             TerminalView typealias + platform representables
 
-GhosttyTheme (485 terminal color themes)
+GhosttyTheme (907 terminal color themes)
   ├─ GhosttyThemeDefinition     — theme data model (name, colors, palette)
   ├─ GhosttyThemeCatalog        — static catalog, search, lookup by name
   ├─ +TerminalConfiguration     — bridge to TerminalConfiguration/TerminalTheme, isDark helper

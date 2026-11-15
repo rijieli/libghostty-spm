@@ -20,7 +20,7 @@ language mode.
 | ----------------- | ------------------------------------------------------------------------------- |
 | `GhosttyKit`      | Re-exports the libghostty C API (`ghostty.h`)                                   |
 | `GhosttyTerminal` | Swift wrapper — native views, SwiftUI integration, input handling, display link |
-| `GhosttyTheme`    | 485 terminal color themes from [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes) (MIT License) |
+| `GhosttyTheme`    | 907 terminal color themes from [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes) (MIT License) |
 | `ShellCraftKit`   | Sandboxed shell emulation framework (depends on GhosttyTerminal)                |
 
 ## Installation
