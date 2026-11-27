@@ -1,3 +1,16 @@
+# Periodic Tasks
+
+Maintenance notes, fork divergence summary, and recurring upstream sync checklist for this `libghostty-spm` fork.
+
+## Fork Changes & Rationale
+
+This repository tracks `Lakr233/libghostty-spm` (`upstream/main`) with a small rebaseable commit stack on top. GitHub Actions is disabled in repository settings so `.github/workflows/` remains untouched with zero diff against upstream.
+
+- **Ghostty pin & local build/test scripts (`Ghostty.ref`, `Script/build.sh`, `Script/test.sh`)**: Pin `Ghostty.ref` to a tagged `vt-*` release (`vt-1.0.2`, compatible with local Zig `0.17.0`) instead of tracking arbitrary `main` commits; reset/clean `References/ghostty-upstream` before `--ref` checkout in `Script/build.sh` so previously applied patches never block a rebuild; make `Script/test.sh` check available XCFramework slices so macOS-only local builds (`--platforms macos`) don't fail on unbuilt iOS/visionOS/Catalyst destinations.
+- **OSC 7501 Program Status (`Patches/ghostty/0090-program-status.patch`, `TerminalProgramStatus.swift`, callback hooks, tests)**: Ghostty's `libghostty-vt` parses OSC 7501, but the `libghostty` app runtime (`src/termio/stream_handler.zig`, `include/ghostty.h`) still ignores `.program_status`. Patch `0090` (high-numbered to avoid colliding with upstream patches) forwards OSC 7501 reports through `GHOSTTY_ACTION_PROGRAM_STATUS` and answers the support query; Swift exposes them via `TerminalSurfaceProgramStatusDelegate` / `TerminalSurfaceProgramStatusDetailsDelegate`.
+- **Themes (`Script/generate-themes.sh`, `Sources/GhosttyTheme/Themes/`)**: Upstream ships 485 themes from `iTerm2-Color-Schemes`. Added local archive support to `Script/generate-themes.sh` and synced 907 themes from Ghostty's theme bundle.
+- **AppKit `acceptsFirstResponder` isolation fix (`AppTerminalView+Lifecycle.swift`)**: Marks `acceptsFirstResponder` as `nonisolated` to avoid a Swift 6 main-actor isolation crash on macOS (still unfixed upstream).
+
 ## Sync Upstream
 
 - Last check: 2026-11-27
