@@ -34,7 +34,7 @@
             addTrackingArea(area)
         }
 
-        override open var acceptsFirstResponder: Bool {
+        nonisolated open override var acceptsFirstResponder: Bool {
             true
         }
 
