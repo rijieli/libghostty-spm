@@ -44,6 +44,14 @@ private enum TerminalCallbacks {
         let bridge = Unmanaged<TerminalCallbackBridge>
             .fromOpaque(bridgePtr)
             .takeUnretainedValue()
+        // The status data is borrowed only during the C callback. Copy and
+        // decode it before an off-main callback is dispatched to the main actor.
+        if action.tag == GHOSTTY_ACTION_PROGRAM_STATUS {
+            if let report = TerminalProgramStatusReport(action.action.program_status) {
+                terminalRunOnMain { bridge.handleProgramStatus(report) }
+            }
+            return false
+        }
         guard Thread.isMainThread else {
             terminalRunOnMain { bridge.handleAction(action) }
             return false

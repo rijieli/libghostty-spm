@@ -41,6 +41,17 @@ final class TerminalCallbackBridge {
         self.delegate = delegate
     }
 
+    func handleProgramStatus(_ report: TerminalProgramStatusReport) {
+        TerminalDebugLog.log(
+            .actions,
+            "callback action=program_status state=\(report.state) percent=\(report.percent.map { "\($0)" } ?? "nil")",
+        )
+        (delegate as? any TerminalSurfaceProgramStatusDelegate)?
+            .terminalDidReportProgramStatus(state: report.state, percent: report.percent)
+        (delegate as? any TerminalSurfaceProgramStatusDetailsDelegate)?
+            .terminalDidReportProgramStatus(report)
+    }
+
     func handleAction(_ action: ghostty_action_s) {
         switch action.tag {
         case GHOSTTY_ACTION_SET_TITLE:
@@ -94,6 +105,11 @@ final class TerminalCallbackBridge {
             )
             (delegate as? any TerminalSurfaceProgressReportDelegate)?
                 .terminalDidReportProgress(state: state, percent: percent)
+
+        case GHOSTTY_ACTION_PROGRAM_STATUS:
+            if let report = TerminalProgramStatusReport(action.action.program_status) {
+                handleProgramStatus(report)
+            }
 
         case GHOSTTY_ACTION_COLOR_CHANGE:
             let payload = action.action.color_change
