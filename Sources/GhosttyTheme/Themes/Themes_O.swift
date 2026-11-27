@@ -9,7 +9,18 @@ public extension GhosttyThemeDefinition {
         cursorText: "8d8d8d",
         selectionBackground: "3e4c4f",
         selectionForeground: "dfe1e2",
-        palette: [0: "000000", 1: "b30d0e", 2: "00bb00", 3: "fecd22", 4: "3a9bdb", 5: "bb00bb", 6: "00bbbb", 7: "bbbbbb", 8: "555555", 9: "ff0003", 10: "93c863", 11: "fef874", 12: "a1d7ff", 13: "ff55ff", 14: "55ffff", 15: "ffffff"],
+        palette: [0: "000000", 1: "b30d0e", 2: "00bb00", 3: "fecd22", 4: "3a9bdb", 5: "bb00bb", 6: "00bbbb", 7: "bbbbbb", 8: "555555", 9: "ff0003", 10: "93c863", 11: "fef874", 12: "a1d7ff", 13: "ff55ff", 14: "55ffff", 15: "ffffff"]
+    )
+
+    static let obsurdian = GhosttyThemeDefinition(
+        name: "Obsurdian",
+        background: "0a0a0a",
+        foreground: "f5f5f5",
+        cursorColor: "ffd54a",
+        cursorText: "0a0a0a",
+        selectionBackground: "3a3a3a",
+        selectionForeground: "ffffff",
+        palette: [0: "b8b8b8", 1: "ff6b6b", 2: "66d98b", 3: "ffe37a", 4: "82aaff", 5: "ff8fd1", 6: "8be9f4", 7: "f0f0f0", 8: "c7c7c7", 9: "ff8585", 10: "82e6a0", 11: "ffeb96", 12: "9abaff", 13: "ffa8dc", 14: "a4f1f7", 15: "ffffff"]
     )
 
     static let ocean = GhosttyThemeDefinition(
@@ -20,7 +31,7 @@ public extension GhosttyThemeDefinition {
         cursorText: "ffffff",
         selectionBackground: "216dff",
         selectionForeground: "ffffff",
-        palette: [0: "000000", 1: "e64c4c", 2: "00a600", 3: "999900", 4: "0000b2", 5: "d826d8", 6: "00a6b2", 7: "bfbfbf", 8: "808080", 9: "ff1a1a", 10: "00d900", 11: "e5e500", 12: "7373ff", 13: "e500e5", 14: "00e5e5", 15: "e5e5e5"],
+        palette: [0: "000000", 1: "e64c4c", 2: "00a600", 3: "999900", 4: "0000b2", 5: "d826d8", 6: "00a6b2", 7: "bfbfbf", 8: "808080", 9: "ff1a1a", 10: "00d900", 11: "e5e500", 12: "7373ff", 13: "e500e5", 14: "00e5e5", 15: "e5e5e5"]
     )
 
     static let oceanic_Material = GhosttyThemeDefinition(
@@ -31,7 +42,7 @@ public extension GhosttyThemeDefinition {
         cursorText: "ffffff",
         selectionBackground: "6dc2b8",
         selectionForeground: "e8eefd",
-        palette: [0: "000000", 1: "ee2b2a", 2: "40a33f", 3: "ffea2e", 4: "1e80f0", 5: "8800a0", 6: "16afca", 7: "a4a4a4", 8: "777777", 9: "dc5c60", 10: "70be71", 11: "fff163", 12: "54a4f3", 13: "aa4dbc", 14: "42c7da", 15: "ffffff"],
+        palette: [0: "000000", 1: "ee2b2a", 2: "40a33f", 3: "ffea2e", 4: "1e80f0", 5: "8800a0", 6: "16afca", 7: "a4a4a4", 8: "777777", 9: "dc5c60", 10: "70be71", 11: "fff163", 12: "54a4f3", 13: "aa4dbc", 14: "42c7da", 15: "ffffff"]
     )
 
     static let oceanic_Next = GhosttyThemeDefinition(
@@ -42,7 +53,18 @@ public extension GhosttyThemeDefinition {
         cursorText: "1b2b34",
         selectionBackground: "4f5b66",
         selectionForeground: "c0c5ce",
-        palette: [0: "162c35", 1: "ec5f67", 2: "99c794", 3: "fac863", 4: "6699cc", 5: "c594c5", 6: "5fb3b3", 7: "ffffff", 8: "65737e", 9: "ec5f67", 10: "99c794", 11: "fac863", 12: "6699cc", 13: "c594c5", 14: "5fb3b3", 15: "ffffff"],
+        palette: [0: "162c35", 1: "ec5f67", 2: "99c794", 3: "fac863", 4: "6699cc", 5: "c594c5", 6: "5fb3b3", 7: "ffffff", 8: "65737e", 9: "ec5f67", 10: "99c794", 11: "fac863", 12: "6699cc", 13: "c594c5", 14: "5fb3b3", 15: "ffffff"]
+    )
+
+    static let ocotillo = GhosttyThemeDefinition(
+        name: "Ocotillo",
+        background: "66301e",
+        foreground: "fff0d8",
+        cursorColor: "f7be55",
+        cursorText: "66301e",
+        selectionBackground: "854b37",
+        selectionForeground: "fff8e9",
+        palette: [0: "d8c8bc", 1: "ffa08a", 2: "91d6a4", 3: "f4cf6c", 4: "95c9ed", 5: "e7a8d1", 6: "88ddd6", 7: "fff0d8", 8: "e5d6cb", 9: "ffb5a0", 10: "aae0b7", 11: "ffdf8b", 12: "b1d8f3", 13: "efbfdb", 14: "a8e8e2", 15: "fffaf0"]
     )
 
     static let ollie = GhosttyThemeDefinition(
@@ -53,7 +75,7 @@ public extension GhosttyThemeDefinition {
         cursorText: "2a292d",
         selectionBackground: "1e3a66",
         selectionForeground: "8a8eac",
-        palette: [0: "000000", 1: "ac2e31", 2: "31ac61", 3: "ac4300", 4: "2d57ac", 5: "b08528", 6: "1fa6ac", 7: "8a8eac", 8: "684432", 9: "ff3d48", 10: "3bff99", 11: "ff5e1e", 12: "4488ff", 13: "ffc21d", 14: "1ffaff", 15: "5b6ea7"],
+        palette: [0: "000000", 1: "ac2e31", 2: "31ac61", 3: "ac4300", 4: "2d57ac", 5: "b08528", 6: "1fa6ac", 7: "8a8eac", 8: "684432", 9: "ff3d48", 10: "3bff99", 11: "ff5e1e", 12: "4488ff", 13: "ffc21d", 14: "1ffaff", 15: "5b6ea7"]
     )
 
     static let one_Dark_Two = GhosttyThemeDefinition(
@@ -64,7 +86,7 @@ public extension GhosttyThemeDefinition {
         cursorText: "1d1f23",
         selectionBackground: "393e47",
         selectionForeground: "e6e6e6",
-        palette: [0: "1d1f23", 1: "e27881", 2: "98c379", 3: "eac786", 4: "71b9f4", 5: "c88bda", 6: "62bac6", 7: "c9ccd3", 8: "4a505a", 9: "e68991", 10: "a8cc8e", 11: "edcf97", 12: "8dc7f6", 13: "d3a2e2", 14: "78c4ce", 15: "e6e6e6"],
+        palette: [0: "1d1f23", 1: "e27881", 2: "98c379", 3: "eac786", 4: "71b9f4", 5: "c88bda", 6: "62bac6", 7: "c9ccd3", 8: "4a505a", 9: "e68991", 10: "a8cc8e", 11: "edcf97", 12: "8dc7f6", 13: "d3a2e2", 14: "78c4ce", 15: "e6e6e6"]
     )
 
     static let one_Double_Dark = GhosttyThemeDefinition(
@@ -75,7 +97,7 @@ public extension GhosttyThemeDefinition {
         cursorText: "9aa3c1",
         selectionBackground: "585b70",
         selectionForeground: "cdd6f4",
-        palette: [0: "3d4452", 1: "f16372", 2: "8cc570", 3: "ecbe70", 4: "3fb1f5", 5: "d373e3", 6: "17b9c4", 7: "dbdfe5", 8: "525d6f", 9: "ff777b", 10: "82d882", 11: "f5c065", 12: "6dcaff", 13: "ff7bf4", 14: "00e5fb", 15: "f7f9fc"],
+        palette: [0: "3d4452", 1: "f16372", 2: "8cc570", 3: "ecbe70", 4: "3fb1f5", 5: "d373e3", 6: "17b9c4", 7: "dbdfe5", 8: "525d6f", 9: "ff777b", 10: "82d882", 11: "f5c065", 12: "6dcaff", 13: "ff7bf4", 14: "00e5fb", 15: "f7f9fc"]
     )
 
     static let one_Double_Light = GhosttyThemeDefinition(
@@ -86,7 +108,7 @@ public extension GhosttyThemeDefinition {
         cursorText: "dbdfe5",
         selectionBackground: "454e5e",
         selectionForeground: "1a1919",
-        palette: [0: "454b58", 1: "f74840", 2: "25a343", 3: "cc8100", 4: "0087c1", 5: "b50da9", 6: "009ab7", 7: "c5b2b3", 8: "0e131f", 9: "ff3711", 10: "00b90e", 11: "ec9900", 12: "1065de", 13: "e500d8", 14: "00b4dd", 15: "ffffff"],
+        palette: [0: "454b58", 1: "f74840", 2: "25a343", 3: "cc8100", 4: "0087c1", 5: "b50da9", 6: "009ab7", 7: "c5b2b3", 8: "0e131f", 9: "ff3711", 10: "00b90e", 11: "ec9900", 12: "1065de", 13: "e500d8", 14: "00b4dd", 15: "ffffff"]
     )
 
     static let one_Half_Dark = GhosttyThemeDefinition(
@@ -97,7 +119,7 @@ public extension GhosttyThemeDefinition {
         cursorText: "e9ecf1",
         selectionBackground: "474e5d",
         selectionForeground: "dcdfe4",
-        palette: [0: "282c34", 1: "e06c75", 2: "98c379", 3: "e5c07b", 4: "61afef", 5: "c678dd", 6: "56b6c2", 7: "dcdfe4", 8: "5d677a", 9: "e06c75", 10: "98c379", 11: "e5c07b", 12: "61afef", 13: "c678dd", 14: "56b6c2", 15: "dcdfe4"],
+        palette: [0: "282c34", 1: "e06c75", 2: "98c379", 3: "e5c07b", 4: "61afef", 5: "c678dd", 6: "56b6c2", 7: "dcdfe4", 8: "5d677a", 9: "e06c75", 10: "98c379", 11: "e5c07b", 12: "61afef", 13: "c678dd", 14: "56b6c2", 15: "dcdfe4"]
     )
 
     static let one_Half_Light = GhosttyThemeDefinition(
@@ -108,7 +130,7 @@ public extension GhosttyThemeDefinition {
         cursorText: "383a42",
         selectionBackground: "bfceff",
         selectionForeground: "383a42",
-        palette: [0: "383a42", 1: "e45649", 2: "50a14f", 3: "c18401", 4: "0184bc", 5: "a626a4", 6: "0997b3", 7: "bababa", 8: "4f525e", 9: "e06c75", 10: "98c379", 11: "d8b36e", 12: "61afef", 13: "c678dd", 14: "56b6c2", 15: "ffffff"],
+        palette: [0: "383a42", 1: "e45649", 2: "50a14f", 3: "c18401", 4: "0184bc", 5: "a626a4", 6: "0997b3", 7: "bababa", 8: "4f525e", 9: "e06c75", 10: "98c379", 11: "d8b36e", 12: "61afef", 13: "c678dd", 14: "56b6c2", 15: "ffffff"]
     )
 
     static let onenord = GhosttyThemeDefinition(
@@ -119,7 +141,7 @@ public extension GhosttyThemeDefinition {
         cursorText: "3b4252",
         selectionBackground: "434c5e",
         selectionForeground: "d8dee9",
-        palette: [0: "3b4252", 1: "e06c75", 2: "9ec183", 3: "ebcb8b", 4: "81a1c1", 5: "b988b0", 6: "88c0d0", 7: "e5e9f0", 8: "596377", 9: "e06c75", 10: "9ec183", 11: "ebcb8b", 12: "81a1c1", 13: "b988b0", 14: "8fbcbb", 15: "eceff4"],
+        palette: [0: "3b4252", 1: "e06c75", 2: "9ec183", 3: "ebcb8b", 4: "81a1c1", 5: "b988b0", 6: "88c0d0", 7: "e5e9f0", 8: "596377", 9: "e06c75", 10: "9ec183", 11: "ebcb8b", 12: "81a1c1", 13: "b988b0", 14: "8fbcbb", 15: "eceff4"]
     )
 
     static let onenord_Light = GhosttyThemeDefinition(
@@ -130,7 +152,40 @@ public extension GhosttyThemeDefinition {
         cursorText: "f7f8fa",
         selectionBackground: "eaebed",
         selectionForeground: "000000",
-        palette: [0: "2e3440", 1: "cb4f53", 2: "48a53d", 3: "ee5e25", 4: "3879c5", 5: "9f4aca", 6: "3ea1ad", 7: "b2b6bd", 8: "646a76", 9: "d16366", 10: "5f9e9d", 11: "ba793e", 12: "1b40a6", 13: "9665af", 14: "8fbcbb", 15: "eceff4"],
+        palette: [0: "2e3440", 1: "cb4f53", 2: "48a53d", 3: "ee5e25", 4: "3879c5", 5: "9f4aca", 6: "3ea1ad", 7: "b2b6bd", 8: "646a76", 9: "d16366", 10: "5f9e9d", 11: "ba793e", 12: "1b40a6", 13: "9665af", 14: "8fbcbb", 15: "eceff4"]
+    )
+
+    static let opaline = GhosttyThemeDefinition(
+        name: "Opaline",
+        background: "131121",
+        foreground: "ece9f7",
+        cursorColor: "ffb3d6",
+        cursorText: "131121",
+        selectionBackground: "2c2748",
+        selectionForeground: "535161",
+        palette: [0: "201b33", 1: "ff6b92", 2: "86e6b4", 3: "ffc2ae", 4: "8fb4ff", 5: "be9bff", 6: "5fe3d8", 7: "ece9f7", 8: "6b678f", 9: "ff81a2", 10: "95e9bd", 11: "f4d27e", 12: "b79bff", 13: "ff9ed2", 14: "72e6dd", 15: "ffffff"]
+    )
+
+    static let openCode_Dark = GhosttyThemeDefinition(
+        name: "OpenCode Dark",
+        background: "0a0a0a",
+        foreground: "eeeeee",
+        cursorColor: "fab283",
+        cursorText: "0a0a0a",
+        selectionBackground: "3d1d06",
+        selectionForeground: "eeeeee",
+        palette: [0: "1e1e1e", 1: "e06c75", 2: "7fd88f", 3: "f5a742", 4: "5c9cf5", 5: "9d7cd8", 6: "56b6c2", 7: "eeeeee", 8: "808080", 9: "fd7e87", 10: "96f7a7", 11: "fab283", 12: "82b4fb", 13: "b38ff4", 14: "68d0dd", 15: "ffffff"]
+    )
+
+    static let openCode_Light = GhosttyThemeDefinition(
+        name: "OpenCode Light",
+        background: "ffffff",
+        foreground: "1a1a1a",
+        cursorColor: "d68c27",
+        cursorText: "ffffff",
+        selectionBackground: "d4e5fd",
+        selectionForeground: "1a1a1a",
+        palette: [0: "1a1a1a", 1: "c20f26", 2: "1f8c44", 3: "c7811e", 4: "226bcc", 5: "6b47a7", 6: "077786", 7: "bebebe", 8: "8a8a8a", 9: "d1383d", 10: "3d9a57", 11: "d68c27", 12: "3b7dd8", 13: "7b5bb6", 14: "318795", 15: "ffffff"]
     )
 
     static let operator_Mono_Dark = GhosttyThemeDefinition(
@@ -141,7 +196,18 @@ public extension GhosttyThemeDefinition {
         cursorText: "161616",
         selectionBackground: "19273b",
         selectionForeground: "dde5dc",
-        palette: [0: "5a5a5a", 1: "ca372d", 2: "4d7b3a", 3: "d4d697", 4: "4387cf", 5: "b86cb4", 6: "72d5c6", 7: "ced4cd", 8: "9a9b99", 9: "c37d62", 10: "83d0a2", 11: "fdfdc5", 12: "89d3f6", 13: "ff2c7a", 14: "82eada", 15: "fdfdf6"],
+        palette: [0: "5a5a5a", 1: "ca372d", 2: "4d7b3a", 3: "d4d697", 4: "4387cf", 5: "b86cb4", 6: "72d5c6", 7: "ced4cd", 8: "9a9b99", 9: "c37d62", 10: "83d0a2", 11: "fdfdc5", 12: "89d3f6", 13: "ff2c7a", 14: "82eada", 15: "fdfdf6"]
+    )
+
+    static let outrun_Electric = GhosttyThemeDefinition(
+        name: "Outrun Electric",
+        background: "0c0a20",
+        foreground: "f2f3f7",
+        cursorColor: "ff2afc",
+        cursorText: "0c0a20",
+        selectionBackground: "ba45a3",
+        selectionForeground: "f2f3f7",
+        palette: [0: "131033", 1: "e61f44", 2: "a7da1e", 3: "ffd400", 4: "1ea8fc", 5: "ff2afc", 6: "42c6ff", 7: "f2f3f7", 8: "546a90", 9: "ef6d85", 10: "c6e76d", 11: "ffe359", 12: "6dc6fd", 13: "df85ff", 14: "84daff", 15: "ffffff"]
     )
 
     static let overnight_Slumber = GhosttyThemeDefinition(
@@ -152,7 +218,7 @@ public extension GhosttyThemeDefinition {
         cursorText: "ffffff",
         selectionBackground: "1f2b41",
         selectionForeground: "ced2d6",
-        palette: [0: "0a1222", 1: "ffa7c4", 2: "85cc95", 3: "ffcb8b", 4: "8dabe1", 5: "c792eb", 6: "78ccf0", 7: "ffffff", 8: "575656", 9: "ffa7c4", 10: "85cc95", 11: "ffcb8b", 12: "8dabe1", 13: "c792eb", 14: "ffa7c4", 15: "ffffff"],
+        palette: [0: "0a1222", 1: "ffa7c4", 2: "85cc95", 3: "ffcb8b", 4: "8dabe1", 5: "c792eb", 6: "78ccf0", 7: "ffffff", 8: "575656", 9: "ffa7c4", 10: "85cc95", 11: "ffcb8b", 12: "8dabe1", 13: "c792eb", 14: "ffa7c4", 15: "ffffff"]
     )
 
     static let owl = GhosttyThemeDefinition(
@@ -163,7 +229,29 @@ public extension GhosttyThemeDefinition {
         cursorText: "2f2b2c",
         selectionBackground: "dedede",
         selectionForeground: "2f2b2c",
-        palette: [0: "302c2c", 1: "5a5a5a", 2: "989898", 3: "cacaca", 4: "656565", 5: "b1b1b1", 6: "7f7f7f", 7: "dedede", 8: "5d595b", 9: "da5b2c", 10: "989898", 11: "cacaca", 12: "656565", 13: "b1b1b1", 14: "7f7f7f", 15: "ffffff"],
+        palette: [0: "302c2c", 1: "5a5a5a", 2: "989898", 3: "cacaca", 4: "656565", 5: "b1b1b1", 6: "7f7f7f", 7: "dedede", 8: "5d595b", 9: "da5b2c", 10: "989898", 11: "cacaca", 12: "656565", 13: "b1b1b1", 14: "7f7f7f", 15: "ffffff"]
+    )
+
+    static let oxblood = GhosttyThemeDefinition(
+        name: "Oxblood",
+        background: "140b0d",
+        foreground: "e8d2d4",
+        cursorColor: "e0483a",
+        cursorText: "140b0d",
+        selectionBackground: "3a2227",
+        selectionForeground: "60575a",
+        palette: [0: "231417", 1: "ff4d54", 2: "c9a24a", 3: "e0b24a", 4: "d9743f", 5: "e0556b", 6: "e0a36a", 7: "e8d2d4", 8: "7a5458", 9: "ff686e", 10: "cfad60", 11: "d9743f", 12: "e86b72", 13: "c8324b", 14: "e4ae7c", 15: "ffffff"]
+    )
+
+    static let oxide = GhosttyThemeDefinition(
+        name: "Oxide",
+        background: "161616",
+        foreground: "cecece",
+        cursorColor: "cecece",
+        cursorText: "161616",
+        selectionBackground: "262626",
+        selectionForeground: "cecece",
+        palette: [0: "262626", 1: "ed756e", 2: "5bb661", 3: "c39900", 4: "3ba6f5", 5: "968ff7", 6: "00baaa", 7: "cecece", 8: "8f8f8f", 9: "ff9890", 10: "7bd77f", 11: "e3b831", 12: "6fc6ff", 13: "b5b2ff", 14: "00dcca", 15: "dedede"]
     )
 
     static let oxocarbon = GhosttyThemeDefinition(
@@ -174,6 +262,18 @@ public extension GhosttyThemeDefinition {
         cursorText: "000000",
         selectionBackground: "393939",
         selectionForeground: "626262",
-        palette: [0: "161616", 1: "00dfdb", 2: "00b4ff", 3: "ff4297", 4: "00c15a", 5: "c693ff", 6: "ff74b8", 7: "f2f4f8", 8: "585858", 9: "00dfdb", 10: "00b4ff", 11: "ff4297", 12: "00c15a", 13: "c693ff", 14: "ff74b8", 15: "f2f4f8"],
+        palette: [0: "161616", 1: "00dfdb", 2: "00b4ff", 3: "ff4297", 4: "00c15a", 5: "c693ff", 6: "ff74b8", 7: "f2f4f8", 8: "585858", 9: "00dfdb", 10: "00b4ff", 11: "ff4297", 12: "00c15a", 13: "c693ff", 14: "ff74b8", 15: "f2f4f8"]
     )
+
+    static let ozz_s_Blizzard = GhosttyThemeDefinition(
+        name: "Ozz's Blizzard",
+        background: "0a0f1a",
+        foreground: "3f6289",
+        cursorColor: "8b8b4c",
+        cursorText: "4cc9f0",
+        selectionBackground: "e76f6f",
+        selectionForeground: "6addcf",
+        palette: [0: "263244", 1: "e76f6f", 2: "2a9d8f", 3: "8b8b4c", 4: "4cc9f0", 5: "7b51ff", 6: "ff7ab6", 7: "f7f7fa", 8: "5c6b7f", 9: "f87171", 10: "34d399", 11: "ffcf24", 12: "38bdff", 13: "a78bfa", 14: "22d3ee", 15: "f7f7fa"]
+    )
+
 }
