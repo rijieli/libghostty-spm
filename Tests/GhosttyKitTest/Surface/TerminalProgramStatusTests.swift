@@ -62,15 +62,18 @@ struct TerminalProgramStatusTests {
         let probe = ProgramStatusProbe()
         bridge.delegate = probe
 
-        for (state, kind, progress) in [
-            (GHOSTTY_PROGRAM_STATUS_STATE_BLOCKED, Int32(GHOSTTY_PROGRAM_STATUS_KIND_AUTH.rawValue), Int8(-1)),
-            (GHOSTTY_PROGRAM_STATUS_STATE_BLOCKED, -1, 70),
-            (GHOSTTY_PROGRAM_STATUS_STATE_ERROR, -1, -1),
-        ] {
-            var action = ghostty_action_s()
-            action.tag = GHOSTTY_ACTION_PROGRAM_STATUS
-            action.action.program_status = ghostty_action_program_status_s(state: state, kind: kind, progress: progress, data_len: 0, data: nil)
-            bridge.handleAction(action)
+        let emptyByte: UInt8 = 0
+        withUnsafePointer(to: emptyByte) { emptyPtr in
+            for (state, kind, progress) in [
+                (GHOSTTY_PROGRAM_STATUS_STATE_BLOCKED, Int32(GHOSTTY_PROGRAM_STATUS_KIND_AUTH.rawValue), Int8(-1)),
+                (GHOSTTY_PROGRAM_STATUS_STATE_BLOCKED, -1, 70),
+                (GHOSTTY_PROGRAM_STATUS_STATE_ERROR, -1, -1),
+            ] {
+                var action = ghostty_action_s()
+                action.tag = GHOSTTY_ACTION_PROGRAM_STATUS
+                action.action.program_status = ghostty_action_program_status_s(state: state, kind: kind, progress: progress, data_len: 0, data: emptyPtr)
+                bridge.handleAction(action)
+            }
         }
 
         #expect(probe.events == [
