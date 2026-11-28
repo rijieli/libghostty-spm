@@ -22,3 +22,29 @@ Steps:
 1. Fetch `upstream` (`Lakr233/libghostty-spm`) and rebase `main` onto `upstream/main`.
 2. Check for a newer Ghostty `vt-*` tag (or use `upstream`'s `Ghostty.ref`), reconcile `Patches/ghostty/0090-program-status.patch` and local commits, and drop anything upstream has incorporated (OSC 7501, themes, `acceptsFirstResponder`).
 3. Rebuild the XCFramework (`./build.sh --platforms macos --ref <sha> --download-url ...`), verify tests and licenses, push `main`, and publish the storage and package releases.
+
+## Sync Ghostty terminal themes
+
+Run from the `libghostty-spm` repository root.
+
+**Period:** Monthly
+
+**Last sync:** 2026-11-15 — `libghostty-spm` `1.4.4`, with 907 themes from
+Ghostty's `2026-11-09` pinned archive.
+
+1. Resolve Ghostty's current pinned archive and download it:
+
+   ```sh
+   THEME_URL="$(rg -o 'https://deps\.files\.ghostty\.org/ghostty-themes-release-[^"]+' ../ghostty/build.zig.zon)"
+   curl -fL "$THEME_URL" -o /tmp/ghostty-themes.tgz
+   ```
+
+2. Regenerate the catalog from that archive:
+
+   ```sh
+   ./Script/generate-themes.sh /tmp/ghostty-themes.tgz
+   ```
+
+3. Verify the generated count, update the theme count in `README.md` and
+   `AGENTS.md`, then publish a new release and move downstream exact package
+   pins (including Actor's) to it.
