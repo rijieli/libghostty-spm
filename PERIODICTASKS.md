@@ -10,6 +10,7 @@ This repository tracks `Lakr233/libghostty-spm` (`upstream/main`) with a small r
 - **OSC 7501 Program Status (`Patches/ghostty/0090-program-status.patch`, `TerminalProgramStatus.swift`, callback hooks, tests)**: Ghostty's `libghostty-vt` parses OSC 7501, but the `libghostty` app runtime (`src/termio/stream_handler.zig`, `include/ghostty.h`) still ignores `.program_status`. Patch `0090` (high-numbered to avoid colliding with upstream patches) forwards OSC 7501 reports through `GHOSTTY_ACTION_PROGRAM_STATUS` and answers the support query; Swift exposes them via `TerminalSurfaceProgramStatusDelegate` / `TerminalSurfaceProgramStatusDetailsDelegate`.
 - **Themes (`Script/generate-themes.sh`, `Sources/GhosttyTheme/Themes/`)**: Upstream ships 485 themes from `iTerm2-Color-Schemes`. Added local archive support to `Script/generate-themes.sh` and synced 907 themes from Ghostty's theme bundle.
 - **AppKit `acceptsFirstResponder` isolation fix (`AppTerminalView+Lifecycle.swift`)**: Marks `acceptsFirstResponder` as `nonisolated` to avoid a Swift 6 main-actor isolation crash on macOS (still unfixed upstream).
+- **Scoped text reading (`TerminalSurface+ReadText.swift`, `AppTerminalView+ReadText.swift`, `UITerminalView+ReadText.swift`, `TerminalViewState+ReadText.swift`, `TerminalReadTextTests.swift`)**: Exposes `TerminalTextScope` (`.viewport`, `.screen`, `.active`) and `readText(scope:)` wrapping `ghostty_surface_read_text` with `TOP_LEFT`/`BOTTOM_RIGHT` bounds so host apps can read terminal text without focusing or altering selection.
 
 ## Sync Upstream
 
